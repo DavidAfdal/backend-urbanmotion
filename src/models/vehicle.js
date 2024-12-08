@@ -1,5 +1,6 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Import the Sequelize instance
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database.js'); // Import the Sequelize instance
+const Booking = require('./booking.js');
 
 const Vehicle = sequelize.define('Vehicle', {
   // Define model attributes
@@ -8,10 +9,14 @@ const Vehicle = sequelize.define('Vehicle', {
     primaryKey: true,
     autoIncrement: true,
   },
-  type: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
   category: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -28,9 +33,22 @@ const Vehicle = sequelize.define('Vehicle', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  image : {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.STRING,
     defaultValue: 'Ready',   // The default status could be 'active'
+    allowNull: false,
+  },
+  air_conditioner: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  doors : {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
 }, {
@@ -38,4 +56,15 @@ const Vehicle = sequelize.define('Vehicle', {
   timestamps: true,      // Enable createdAt and updatedAt fields
 });
 
-export default Vehicle;
+
+Vehicle.hasMany(Booking, {
+  foreignKey: 'vehicle_id',
+  as: 'bookings', // Alias for accessing bookings of a vehicle
+});
+
+Booking.belongsTo(Vehicle, {
+  foreignKey: 'vehicle_id',
+  as: 'vehicle', // Alias for accessing the associated vehicle of a booking
+});
+
+module.exports= Vehicle;

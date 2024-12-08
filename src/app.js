@@ -1,24 +1,28 @@
 
-import express from 'express';
-import cors from 'cors'
-import path from 'path';
-import UserRoute from "./routes/user.js";
-import VehicleRoute from "./routes/vehicle.js";
-import BookingRoute from "./routes/booking.js";
-import dotenv from 'dotenv';
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const limiter = require('./middleware/rate-limiter')
+const AuthRoute = require("./routes/auth");
+const VehicleRoute = require("./routes/vehicle");
+const BookingRoute = require("./routes/booking");
+const UserRoute = require("./routes/user");
+const DashboardData = require("./routes/dashboard");
 
-dotenv.config()
+require("dotenv").config(); 
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
 
 app.use('/uploads', express.static(path.join(__dirname, '/public/uploads')));
 app.use(express.json())
 app.use(cors())
+app.use(limiter)
 
-app.use("/user", UserRoute)
-app.use(VehicleRoute)
-app.use(BookingRoute)
+app.use("/auth", AuthRoute)
+app.use("/dashboard", DashboardData)
+app.use("/vehicles",VehicleRoute)
+app.use("/booking", BookingRoute)
+app.use("/users", UserRoute )
 
 
 app.listen(process.env.APP_PORT, () => {

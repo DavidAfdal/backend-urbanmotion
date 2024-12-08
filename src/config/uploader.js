@@ -1,10 +1,10 @@
-import multer from 'multer';
-import path from 'path';
+const multer = require('multer');
+const path = require('path');
 
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/'); // Directory where images will be stored
+      cb(null, 'src/public/uploads/'); // Directory where images will be stored
     },
     filename: (req, file, cb) => {
       // Give the file a unique name
@@ -31,4 +31,4 @@ const storage = multer.diskStorage({
   });
 
 
-  export default upload;
+module.exports = upload;

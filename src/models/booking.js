@@ -1,12 +1,12 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Import the Sequelize instance
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database.js'); // Import the Sequelize instance
 
 const Booking = sequelize.define('Booking', {
   // Define model attributes
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     primaryKey: true,
-    autoIncrement: true,
+    allowNull: false,
   },
   user_id: {
     type: DataTypes.INTEGER,
@@ -15,6 +15,22 @@ const Booking = sequelize.define('Booking', {
       model: 'users',   // Refers to the 'users' table where user details are stored
       key: 'id',
     },
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phone_number: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   vehicle_id: {
     type: DataTypes.INTEGER,
@@ -28,8 +44,16 @@ const Booking = sequelize.define('Booking', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  driver: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  total_days: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   total_amount: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   status: {
@@ -38,7 +62,7 @@ const Booking = sequelize.define('Booking', {
     allowNull: false,
   },
 }, {
-  tableName: 'bookins', // Define the table name
+  tableName: 'bookings', // Define the table name
   timestamps: true,         // Enable createdAt and updatedAt fields
 });
-export default Booking;
+module.exports= Booking;

@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Import the Sequelize instance
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database.js'); // Import the Sequelize instance
 
 const User = sequelize.define('User', {
   // Define model attributes
@@ -19,19 +19,23 @@ const User = sequelize.define('User', {
   },
   phone_number: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   password: {
     type: DataTypes.STRING,
+    allowNull: true,
+  },
+  role: {
+    type: DataTypes.STRING,
     allowNull: false,
+    defaultValue: 'user',
   },
   photo_profile: {
     type: DataTypes.STRING,
     allowNull: true,
   }
 }, {
-  tableName: 'users', // Optional: Define the table name
   timestamps: true,   // Enable createdAt and updatedAt fields
 });
 
-export default User;
+module.exports = User;

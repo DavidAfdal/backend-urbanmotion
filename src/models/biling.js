@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/database.js'; // Import the Sequelize instance
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database.js'); // Import the Sequelize instance
 
 const Billing = sequelize.define('Billing', {
   id: {
@@ -8,7 +8,7 @@ const Billing = sequelize.define('Billing', {
     autoIncrement: true,
   },
   booking_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,  // Foreign key to associate the billing with a car rental
     references: {
       model: 'bookings',  // Refers to the 'car_rentals' table where rental bookings are stored
@@ -16,7 +16,7 @@ const Billing = sequelize.define('Billing', {
     },
   },
   total_amount: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.INTEGER,
     allowNull: false,  // The total amount to be billed
   },
   payment_status: {
@@ -37,4 +37,4 @@ const Billing = sequelize.define('Billing', {
   timestamps: true,      // Enable createdAt and updatedAt fields
 });
 
-export default Billing
+module.exports= Billing

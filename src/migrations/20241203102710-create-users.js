@@ -1,37 +1,40 @@
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
-export const up = async (queryInterface, Sequelize) => {
-  await queryInterface.createTable('vehicles', {
+
+module.exports = {
+ up : async (queryInterface, Sequelize) => {
+  await queryInterface.createTable('users', {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    type: {
+    username: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    category: {
+    email: {
       type: Sequelize.STRING,
+      unique: true,
       allowNull: false,
     },
-    transmission_type: {
+    phone_number: {
       type: Sequelize.STRING,
       allowNull: true,
     },
-    passenger_capacity: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    price: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    status: {
+    password: {
       type: Sequelize.STRING,
-      defaultValue: 'Ready',
+      allowNull: true,
+    },
+    photo_profile: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    role: {
+      type: Sequelize.STRING,
       allowNull: false,
+      defaultValue: 'user',
     },
     createdAt: {
       type: Sequelize.DATE,
@@ -42,8 +45,8 @@ export const up = async (queryInterface, Sequelize) => {
       allowNull: false,
     },
   });
-};
-
-export const down = async (queryInterface, Sequelize) => {
-  await queryInterface.dropTable('vehicles');
+},
+ down : async (queryInterface, Sequelize) => {
+  await queryInterface.dropTable('users');
+}
 };
