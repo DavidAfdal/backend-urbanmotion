@@ -16,7 +16,7 @@ npm install
 
 ### Step 3: Set Up Your `.env` File
 
-Locate the `.env.sample` file in the project’s root directory. Rename it to `.env`.
+Locate the .env.sample file in the project’s root directory. Rename it to .env and configure the necessary environment variables (e.g., database connection strings, API keys).
 
 ### Step 4: Run Migrations and Seed the Database
 Ensure your database is up and running, then execute the following commands:
