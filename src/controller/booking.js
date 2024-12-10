@@ -79,7 +79,15 @@ const CreateBooking = async(req, res, next) => {
 const GetBooking = async(req, res, next) => {
 
     try {
-        const bookings = await Booking.findAll({})
+        const bookings = await Booking.findAll({  
+            attributes: ['id', 'rental_date', "total_days","total_amount", "username","status"],
+            include: [ {
+                model: Vehicle,
+                as: 'vehicle', // Alias defined in the association
+                attributes: ['name'], // Specify only the fields you need from the Vehicle model
+              },
+            ],
+        })
 
         res.status(200).json({
             message: "Get all booking successful",
@@ -150,12 +158,14 @@ const ConfirmBookingPayment = async(req, res, next) => {
     let bookingID = order_id;
     let transactionStatus = transaction_status;
     let fraudStatus = fraud_status;
+
+    console.log(bookingID, transactionStatus, fraudStatus)
     try {
         if (transactionStatus == 'capture') {
 
             if (fraudStatus == 'challenge') {
                 await sequelize.transaction(async (t) => {
-                    await Booking.update({status: "cancel"}, {where: {id: bookingID}, transaction: t})
+                    await Booking.update({status: "canceled"}, {where: {id: bookingID}, transaction: t})
                     await Billing.update({status: "deny"}, {where: {booking_id: bookingID}, transaction: t})
 
                     res.status(200).json({
@@ -168,9 +178,10 @@ const ConfirmBookingPayment = async(req, res, next) => {
             } else if (fraudStatus == 'accept') { 
 
                 await sequelize.transaction(async (t) => {
-                    const booking = await Booking.update({status: "completed"}, {where: {id: bookingID}, transaction: t})
+                    await Booking.update({status: "completed"}, {where: {id: bookingID}, transaction: t})
                     await Billing.update({status: "accepted"}, {where: {booking_id: bookingID}, transaction: t})
-
+                     // Retrieve the updated booking
+                    const booking = await Booking.findOne({ where: { id: bookingID }, transaction: t });
                     await Vehicle.update({status: "booking"}, {where: {id: booking.vehicle_id}, transaction: t})
                     res.status(200).json({
                         "fraud_status": "accept",
@@ -180,9 +191,12 @@ const ConfirmBookingPayment = async(req, res, next) => {
             }
         } else if (transactionStatus == 'settlement') {
             await sequelize.transaction(async (t) => {
-                const booking = await Booking.update({status: "done"}, {where: {id: bookingID}, transaction: t})
+                console.log(bookingID)
+                 await Booking.update({status: "completed"}, {where: {id: bookingID}, transaction: t})
+             
+                 // Retrieve the updated booking
+                const booking = await Booking.findOne({ where: { id: bookingID }, transaction: t });
                 await Billing.update({status: "accepted"}, {where: {booking_id: bookingID}, transaction: t})
-
                 await Vehicle.update({status: "booking"}, {where: {id: booking.vehicle_id}, transaction: t})
                 res.status(200).json({
                     "fraud_status": "accept",
@@ -191,7 +205,7 @@ const ConfirmBookingPayment = async(req, res, next) => {
             }) 
         } else if (transactionStatus == 'deny') {
             await sequelize.transaction(async (t) => {
-                await Booking.update({status: "cancel"}, {where: {id: bookingID}, transaction: t})
+                await Booking.update({status: "canceled"}, {where: {id: bookingID}, transaction: t})
                 await Billing.update({status: "deny"}, {where: {booking_id: bookingID}, transaction: t})
 
                 res.status(200).json({
@@ -201,7 +215,7 @@ const ConfirmBookingPayment = async(req, res, next) => {
             })
         } else if (transactionStatus == 'cancel' || transactionStatus == 'expire') {
             await sequelize.transaction(async (t) => {
-                await Booking.update({status: "cancel"}, {where: {id: bookingID}, transaction: t})
+                await Booking.update({status: "canceled"}, {where: {id: bookingID}, transaction: t})
                 await Billing.update({status: "expired"}, {where: {booking_id: bookingID}, transaction: t})
 
                 res.status(200).json({
@@ -211,6 +225,7 @@ const ConfirmBookingPayment = async(req, res, next) => {
             }) 
         } 
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'Server error', error: error.message })
     }
   

@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const User = require("../models/user");
 
 const GetUserByID = async (req, res, next) => {
@@ -27,7 +28,7 @@ const GetUserByID = async (req, res, next) => {
 
 const UpdateUser = async (req, res, next) => {
     const {id} = req.user
-    const {username, phone_number} = req.body
+    const {username,  phone_number} = req.body
     const {file} = req
 
     try {
@@ -41,24 +42,36 @@ const UpdateUser = async (req, res, next) => {
         }
         
         if (file) {
-            user.image = `uploads/${file.filename}`
+           const userResponse = await user.update({
+                username: username,
+                phone_number: phone_number,
+                photo_profile: `uploads/${file.filename}`
+            }, {where: {id: id}})
+            return   res.status(200).json({
+                message: `Update user by id ${id} successful`,
+                data: {
+                    user: userResponse
+                }
+            })
         } else {
-            user.image = null
+            const userResponse = await user.update({
+                username: username,
+                phone_number: phone_number
+            }, {where: {id: id}})
+            return   res.status(200).json({
+                message: `Update user by id ${id} successful`,
+                data: {
+                    user: userResponse
+                }
+            })
         }
 
-        user.username = username
-        user.phone_number = phone_number
 
-        await user.save()
 
-        res.status(200).json({
-            message: `Update user by id ${id} successful`,
-            data: {
-                user
-            }
-        })
+      
 
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: 'Server error', error: error.message })
     }
 }

@@ -99,6 +99,53 @@ const DeleteVehicle = async (req, res, next) => {
 
 
 const UpdateVehicle = async (req, res, next) => {
+    const {vehicleID} = req.params
+    const {name, type, category, transmission_type, passenger_capacity, price,  air_conditioner, doors} = req.body    
+    const {file} = req
+
+    try {
+        if (!file) {
+           const vehicle = await Vehicle.update({
+            name,
+            type,
+            category,
+            transmission_type,
+            passenger_capacity,
+            price,
+            air_conditioner: air_conditioner === 'True' ? true : false,
+            doors,
+           }, {where: {id: vehicleID}})
+           console.log(vehicle)
+            return res.status(200).json({
+                message: `Update vehicle successful`, 
+                data: {
+                    vehicle
+                }
+            });
+            
+        } else {
+            const vehicle = await Vehicle.update({
+                name,
+                type,
+                category,
+                transmission_type,
+                passenger_capacity,
+                price,
+                air_conditioner: air_conditioner === 'True' ? true : false,
+                doors,
+                image: `uploads/${file.filename}`
+            }, {where: {id: vehicleID}})
+
+            return res.status(200).json({
+                message: `Update vehicle successful`, 
+                data: {
+                        vehicle
+                }
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message })
+    }
 
 }
 

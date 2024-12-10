@@ -13,7 +13,7 @@ route.get("/", GetVehicles);
 route.get('/:vehicleID', GetVehicleByID)
 route.use(jwtMiddleware)
 route.post('/', checkRole(["admin"]), upload.single("image"), CreateVehicle)
-route.put('/:vehicleID', checkRole(["admin"]),UpdateVehicle)
+route.put('/:vehicleID', checkRole(["admin"]),upload.single("image"), UpdateVehicle)
 route.delete('/:vehicleID', checkRole(["admin"]), DeleteVehicle)
 
 // Export the router
